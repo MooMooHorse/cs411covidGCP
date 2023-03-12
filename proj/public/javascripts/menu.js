@@ -47,5 +47,5 @@ function menu_click(menuItemName, elmnt, color) {
     if (page_open(menuItemName)) redir_page(menuItemName.toLowerCase());
 }
 // Get the element with id="defaultOpen" and click on it
-document.getElementById("main-button").click();
+// document.getElementById("main-button").click();
 
