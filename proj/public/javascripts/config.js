@@ -5,5 +5,5 @@
 // Valid Page Setting
 
 // const valid_pages = ['Main', 'Contributors', 'Account'];
-const valid_pages = ['Main', 'Contributors'];
+const valid_pages = ['Main', 'Contributors', 'Account'];
 
