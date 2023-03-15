@@ -64,6 +64,9 @@ function submit_login_info(){
     var password=document.querySelector("#form__input--loginpassword").value;
     console.log(username);
     console.log(password);
+    if(password.includes("'") ) {
+        return false;
+    }
     /**
      * client (call->) server function 
      * js (in) server
