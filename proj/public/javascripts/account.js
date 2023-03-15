@@ -1,6 +1,8 @@
 let COMMUNICATION = 'http://34.16.128.167:8443/'; 
 let LOGIN_API = '/account/login';
 let REGSTER_API = '/account/register';
+let DASHBOARD_API = '/dashboard';
+let TRY_DASHBOARD_API = '/account/trydashboard';
 /** 
  * A series of functions to handle error during registration and login
 */
@@ -22,6 +24,38 @@ function clearInputError(inputElement) {
     inputElement.parentElement.querySelector(".form__input-error-message").textContent = "";
 }
 
+// Function to access protected resource
+// make an attempt to access dash board.
+function dashboard() {
+    const token = localStorage.getItem('token'); // Get the token from localStorage
+    if(token === null) {
+        return ;
+    }
+    const headers = { Authorization: `Bearer ${token}` };
+    axios.get(TRY_DASHBOARD_API, { headers }).then((response) => {
+        if (response.data.success) {
+            window.location = DASHBOARD_API ;
+            // the following code will not work because we are still in current page.
+            // This kinds of make sense because we can't force (or can we) the brower to attach our token to every request it sends.
+            // axios.get(DASHBOARD_API, { headers }).then((response) => {
+            //     if (response.data.success) {
+            //         console.log('logged in');
+            //     }
+            // }).catch((error) => {
+            //     console.error(error);
+            // });
+            // ok, now we are at dashboard
+        } else {
+            console.log('attempt for dashboard failed');
+            // remain in current page 
+            // alert(response.data.message);
+            // window.location.href = '/login';
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
+}
+
 /**
  * submit the login information including username/email and password
  */
@@ -41,14 +75,22 @@ function submit_login_info(){
             password: password
         })
         .then(function (response) {
-            var data= response['data'] ;
-            console.log(data);
-            if(data==="Success"){
-                resolve(true);
-            }
-            else{
+            if(response.data.success) {
+                const token = response.data.token;
+                localStorage.setItem('token', token); // Save the token in localStorage
+                dashboard();
+                resolve(true); // pointless
+            }else{
                 resolve(false);
             }
+            // var data= response['data'] ;
+            // console.log(data);
+            // if(data==="Success"){
+            //     resolve(true);
+            // }
+            // else{
+            //     resolve(false);
+            // }
         })
         .catch(function (error) {
             console.log(error);
@@ -96,6 +138,9 @@ function submit_regstration_info(){
 }
 
 
+
+
+
 /**
  * Function called when html file is loaded.
  * It contains logics to 
@@ -108,6 +153,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const createAccountForm = document.querySelector("#createAccount"); // registration form object
     const loginMeta = document.querySelectorAll(".login-region");
     let isFormLogin=true;
+    /**
+     * 0. Check local storage : If we have token, we directly jump to dashboard
+    */
+    dashboard();
+
     /**
      * 1. add events for swapping form--hidden class to two divisions. form--hidden change the display property.
      */
@@ -142,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }).catch(function(error) {
-            console.log(error)
+            console.log(error);
         }); 
 
     });
@@ -161,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 isFormLogin=true;
             }
         }).catch(function(error) {
-            console.log(error)
+            console.log(error);
         }); 
     });
     /**

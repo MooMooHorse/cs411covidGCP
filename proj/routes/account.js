@@ -8,6 +8,7 @@
  */
 
 var express = require('express');
+const jwt = require('jsonwebtoken');
 var router = express.Router();
 
 // configure DB connection
@@ -17,6 +18,7 @@ const DB_CONFIG = require('./dbconfig');
 let DB_HOST_IP = DB_CONFIG.DB_CONFIG.DB_HOST_IP;
 let DB_USR = DB_CONFIG.DB_CONFIG.DB_USR;
 let DB_PSW = DB_CONFIG.DB_CONFIG.DB_PSW;
+let secretKey = DB_CONFIG.DB_CONFIG.SECRETKEY;
 
 console.log(DB_HOST_IP);
 
@@ -58,6 +60,26 @@ router.get('/', function(req, res, next) {
     menuBlockMesg1 : 'Log in PLZ', 
     menuBlockMesg2 : ''});
   });
+
+// this API tries to log the user in based on the token given
+router.get('/trydashboard', (req, res) => {
+    // Check if the Authorization header is present and contains a valid token
+    const authHeader = req.headers.authorization;
+    console.log(req.headers.authorization);
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, secretKey, (err, decoded) => {
+            if (err) {
+                res.json({ success: false, message: 'Invalid token' });
+            } else {
+                res.json({ success: true, message: 'Access granted to protected resource', username: decoded.username });
+            }
+        });
+    } else {
+        res.status(401).json({ success: false, message: 'Authorization header missing' });
+    }
+});
+
 
 /**
  * connect to mysql.
@@ -190,7 +212,10 @@ router.post('/login',(req,res) => {
                 con.query(sql_username_exist,function (err, result) {
                     if (err) throw err;
                     if(Object.values(result[0])[0]){ // login success
-                        res.send("Success");
+                        // we return a token
+                        const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+                        res.json({ success: true, message: 'Authentication successful', token });
+                        // res.send("Success");
                         console.log(`user with username/email : ${username} and password : ${password} logged in`);
                     }
                     else{
