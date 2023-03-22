@@ -1,7 +1,7 @@
 ## How to get access to the vm on GCP using ssh
 
 ### generate a ssh key
-1. Open a terminal you like and type in `ssh-keygen -t rsa -f ~/.ssh/[KEY_FILENAME] -C [USERNAME]`. The username should be "moomoohorse773834256". For example, `ssh-keygen -t rsa -f ~/.ssh/covid_ula -C moomoohorse773834256`.
+1. Open a terminal you like and type in `ssh-keygen -t rsa -f ~/.ssh/[KEY_FILENAME] -C [USERNAME]`. The username should be "rhao8608". For example, `ssh-keygen -t rsa -f ~/.ssh/covid_ula -C rhao8608`.
 2. The message shows "Enter passphrase (empty for no passphrase):", and you can simply press enter twice
 3. Use `cd ~/.ssh` then type `ls` and you should be able to see a pair of your keys, "keyname", "keyname.pub"
 4. open "keyname.pub" with a text editor and copy the content. Ask the GCP administrator(Ren Hao) to add your ssh key.
