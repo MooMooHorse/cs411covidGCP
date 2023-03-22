@@ -1,4 +1,4 @@
-let COMMUNICATION = 'http://34.16.128.167:8443/'; 
+let COMMUNICATION = 'http://34.16.138.110:8443/';
 let LOGIN_API = '/account/login';
 let REGSTER_API = '/account/register';
 let DASHBOARD_API = '/dashboard';
