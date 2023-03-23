@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/stylesheets/menu.css" />
+    <link rel="stylesheet" href="/stylesheets/main.css" />
+    <link rel="stylesheet" href="/stylesheets/papers.css" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    <!-- <link rel="stylesheet" href="timeline.css"> -->
+    <!-- <link rel="stylesheet" href="interactive-and-responsive-svg-map-of-us-states-capitals/map.css"> -->
+  </head>
+
+  <body>
+    <!-- Menu Section -->
+
+    <%- include('menu') %>
+
+    <!-- Body Section -->
+    <div>
+      <p><br /><br /><br /></p>
+    </div>
+
+    <div id="search bar">
+      <form id="search-form" class="search-form" action="/search" method="GET">
+        <input type="text" name="query" placeholder="Search..." />
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <br />
+
+    <div id="search-results" style="color: rebeccapurple"></div>
+  </body>
+  <!-- Assorted JS files : Order DOES matter, files to be included should be placed before the "includers" -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/javascripts/config.js"></script>
+  <!-- <script src="interactive-and-responsive-svg-map-of-us-states-capitals/map.js"></script> -->
+  <script src="/javascripts/menu.js"></script>
+  <script>
+    const searchForm = document.querySelector('#search-form')
+    const searchResults = document.querySelector('#search-results')
+    searchForm.addEventListener('submit', event => {
+      event.preventDefault() // prevent from page reloading
+
+      const query = searchForm.querySelector('input[name="query"]').value // read search text
+
+      searchResults.innerHTML = `search request: ${query}`
+    })
+  </script>
+
+  <!-- <script src="timeline.js"></script> -->
+</html>

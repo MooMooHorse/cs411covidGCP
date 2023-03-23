@@ -1,0 +1,33 @@
+
+.search-form {
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0 auto;
+  /* width:800px; */
+}
+
+.search-form input[type="text"] {
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  width: 80%;
+  border-radius: 5px;
+  box-shadow: none;
+}
+
+.search-form button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.search-form button[type="submit"]:hover {
+  background-color: #3e8e41;
+}
+
