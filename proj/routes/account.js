@@ -86,7 +86,7 @@ router.get('/trydashboard', (req, res) => {
  */
 con.connect(function(err) {
     if (err) throw err;
-    console.log("Connected!");
+    console.log("Connected for account!");
     // if there is mydb (our default database), delete it
     con.query("DROP DATABASE IF EXISTS mydb;",function(err,result){
         if (err) throw err;
