@@ -68,6 +68,7 @@ router.get('/trydashboard', (req, res) => {
     console.log(req.headers.authorization);
     if (authHeader) {
         const token = authHeader.split(' ')[1];
+        // console.log(token, secretKey);
         jwt.verify(token, secretKey, (err, decoded) => {
             if (err) {
                 res.json({ success: false, message: 'Invalid token' });
@@ -122,6 +123,22 @@ con.connect(function(err) {
         }
 
     });
+
+    /**
+     * @todo : create another table that associates user with their data 
+     * data should include : (0) auto-incremented index (serve as primary key) (1) username (2) query content (3) query type (4) query result (5) query result index
+     * CREATE TABLE queries (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
+        queryContent TEXT,
+        queryType VARCHAR(50) ,
+        queryResult TEXT,
+        resultIndex INT
+        );
+     * Note : add primary key, just use an index to do it. (implemented like above)
+    * table should also be in covidgcp database
+     */
+    
 
     // dev : run sql unit test
     // mysql_unit_test();
@@ -216,7 +233,7 @@ router.post('/login',(req,res) => {
                         const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
                         res.json({ success: true, message: 'Authentication successful', token });
                         // res.send("Success");
-                        console.log(`user with username/email : ${username} and password : ${password} logged in`);
+                        // console.log(`user with username/email : ${username} and password : ${password} logged in`);
                     }
                     else{
                         res.send("Failed : incorrect username/password");

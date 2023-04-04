@@ -81,6 +81,7 @@ function submit_login_info(){
             if(response.data.success) {
                 const token = response.data.token;
                 localStorage.setItem('token', token); // Save the token in localStorage
+                localStorage.setItem('username', username); // Save the username in localStorage
                 dashboard();
                 resolve(true); // pointless
             }else{

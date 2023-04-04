@@ -13,23 +13,38 @@ form.addEventListener('submit', (event) => {
     const instance = axios.create({ baseURL: COMMUNICATION });
 
     // Make a POST request to the server to get the data for the selected state
+    // my very lousy implementation of token handling
     return new Promise((resolve, reject) => {
-        instance.post(ADQ1API, { stateName: state }, { headers: { 'Content-Type': 'application/json' } })
-            .then(response => {
-                var data = response.data;
-                console.log(data);
+        var token = localStorage.getItem('token');
+        var username = localStorage.getItem('username');
+        // console.log(token, username);
+        var myheader = {headers : {
+            'Content-Type': 'application/json',
+        }};
+        // console.log(token, username);
+        if(token && username) {
+            myheader = {headers : {
+                'Content-Type': 'application/json',
+                'token': token,
+                'username': username
+                }
+            };
+        }
+        console.log(myheader);
+        instance.post(ADQ1API, { stateName: state }, myheader).then(response => {
+            var data = response.data;
 
-                // Display the data for the selected state
-                stateData.innerHTML = `
-                <p>Bed utilization: ${data.bed_utl}</p>
-                <p>Vaccination ratio: ${data.vacc_ratio}</p>
-                `;
+            // Display the data for the selected state
+            stateData.innerHTML = `
+            <p>Bed utilization: ${data.bed_utl}</p>
+            <p>Vaccination ratio: ${data.vacc_ratio}</p>
+            `;
 
-                resolve(data);
-            })
-            .catch(error => {
-                console.error('Error fetching state data:', error);
-                reject(error);
-            });
+            resolve(data);
+        })
+        .catch(error => {
+            console.error('Error fetching state data:', error);
+            reject(error);
+        });
     });
 });
