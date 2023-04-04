@@ -33,7 +33,7 @@
         </div>
         <button class="form__button" type="submit">Continue</button>
         <p class="form__text">
-            <a href="#" class="form__link">Forgot your password?</a>
+            <a class="form__link" href="./" class="form__link" id="linkeChangePassword">Change your password?</a>
         </p>
         <p class="form__text">
             <a class="form__link" href="./" id="linkCreateAccount">Don't have an account? Create account</a>
@@ -60,7 +60,32 @@
         </div>
         <button class="form__button" type="submit">Continue</button>
         <p class="form__text">
-            <a class="form__link" href="./" id="linkLogin">Already have an account? Sign in</a>
+            <a class="form__link" href="./" id="linkLogin1">Already have an account? Sign in</a>
+        </p>
+    </form>
+
+    <form class="form form--hidden" id="changePassWord">
+        <h1 class="form__title">Change Password</h1>
+        <div class="form__message form__message--error"></div>
+        <div class="form__input-group">
+            <input type="text" id="signupUsername" class="form__input" autofocus placeholder="Username">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="text" id="form__input--originalPassword" class="form__input" autofocus placeholder="Original Password">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" id="form__input--newPassword" class="form__input" autofocus placeholder="New Password">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" id="form__input--newconfirmedpassword" class="form__input" autofocus placeholder="New Confirmed Password">
+            <div class="form__input-error-message"></div>
+        </div>
+        <button class="form__button" type="submit">Finish</button>
+        <p class="form__text">
+            <a class="form__link" href="./" id="linkLogin2">Don't want to change Password? Go back</a>
         </p>
     </form>
     <div class = "login-region div__hidden" id ="login-meta">
