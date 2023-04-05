@@ -110,17 +110,17 @@ router.post('/adquery1', function(req, res, next) {
              * store the query and the result in the database, now we hae user name, query and query result.
              */
             const insert_userQuery_table = `
-            INSERT INTO covid_trail1.userQuery (username, queryContent, queryType, queryResult, resultIndex)
+            INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultIndex)
             VALUES ('${username}', '${queriedState}', 'ADQ1', '${result[0]}', 1);
             `;
-            console.log(insert_userQuery_table);
+            // console.log(insert_userQuery_table);
             con.query(insert_userQuery_table, function(err, result) {
                 if (err) throw err;
                 // console.log(result);
             });
 
         }
-    // console.log(result[0]);
+        // console.log(result[0]);
         res.send(result[0]);
     });
 });
