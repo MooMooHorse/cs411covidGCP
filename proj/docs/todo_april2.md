@@ -2,8 +2,20 @@
 
 ## Finish Integrate into your application both of the advanced SQL queries you developed in stage 3. (6%)
 
-haor2 will make a sketch : 
+Finished
 
-* We will add a button to directly execute the two query and reflect that onto screen
+## Search the database using a keyword search. Your application should allow the user to input their search keyword and return the result to the interface (5%):
 
-## Finish Delete rows from the database (3%)
+Done
+
+## Integrate into your application both of the advanced SQL queries you developed in stage 3. (6%)
+
+Need 1
+
+
+## Delete rows from the database (3%)
+
+
+
+## Update records on the database and reflect the change on the frontend interface (3%)
+
