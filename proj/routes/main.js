@@ -105,10 +105,6 @@ router.post('/adquery1', function(req, res, next) {
         const isTokenValid = DB_CONFIG.isSignatureValid(token,username);
         if(isTokenValid) {
             // console.log('token is valid');
-            /**
-             * @todo:
-             * store the query and the result in the database, now we hae user name, query and query result.
-             */
             const insert_userQuery_table = `
             INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultIndex)
             VALUES ('${username}', '${queriedState}', 'ADQ1', '${result[0]}', 1);
