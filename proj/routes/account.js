@@ -150,7 +150,7 @@ con.connect(function(err) {
         queryContent TEXT,
         queryType VARCHAR(50) ,
         queryResult TEXT,
-        resultIndex INT
+        resultName TEXT
     );
     `;
     /**
