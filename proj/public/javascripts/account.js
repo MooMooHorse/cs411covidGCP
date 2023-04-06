@@ -148,7 +148,7 @@ function submit_regstration_info(){
  * update the password for a user 
  */
 function update_password(){
-    var username=document.querySelector("#signupUsername").value;
+    var username=document.querySelector("#signupUsername2").value;
     var original_password=document.querySelector("#form__input--originalPassword").value;
     var new_password=document.querySelector("#form__input--newPassword").value;
     var new_confirmed_password=document.querySelector("#form__input--newconfirmedpassword").value;
