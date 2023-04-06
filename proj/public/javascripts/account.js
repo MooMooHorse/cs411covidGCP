@@ -81,6 +81,7 @@ function submit_login_info(){
             if(response.data.success) {
                 const token = response.data.token;
                 localStorage.setItem('token', token); // Save the token in localStorage
+                localStorage.setItem('username', username); // Save the username in localStorage
                 dashboard();
                 resolve(true); // pointless
             }else{
@@ -154,6 +155,7 @@ function submit_regstration_info(){
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("#login"); // login form object
     const createAccountForm = document.querySelector("#createAccount"); // registration form object
+    const changePasswordForm = document.querySelector("#changePassWord"); // change password form (interface)
     const loginMeta = document.querySelectorAll(".login-region");
     let isFormLogin=true;
     /**
@@ -166,17 +168,37 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     document.querySelector("#linkCreateAccount").addEventListener("click", e => {
         e.preventDefault();
-        loginForm.classList.add("form--hidden");
         createAccountForm.classList.remove("form--hidden");
+        loginForm.classList.add("form--hidden");
         isFormLogin=false;
     });
 
-    document.querySelector("#linkLogin").addEventListener("click", e => {
+    document.querySelector("#linkLogin1").addEventListener("click", e => {
         e.preventDefault();
         loginForm.classList.remove("form--hidden");
-        createAccountForm.classList.add("form--hidden");
+        if(!createAccountForm.classList.contains("form--hidden")) 
+            createAccountForm.classList.add("form--hidden");
+        
         isFormLogin=true;
     });
+    document.querySelector("#linkLogin2").addEventListener("click", e => {
+        e.preventDefault();
+        loginForm.classList.remove("form--hidden");
+        if(!changePasswordForm.classList.contains("form--hidden"))
+                changePasswordForm.classList.add("form--hidden");
+        
+        isFormLogin=true;
+    });
+
+    document.querySelector("#linkeChangePassword").addEventListener("click", e => {
+        e.preventDefault();
+        changePasswordForm.classList.remove("form--hidden");
+        loginForm.classList.add("form--hidden"); // change password must comes from login
+        
+        isFormLogin=false;
+    }
+    
+    );
     /**
      * 2. handle the submit request by overwritting submit event for the form.
      */
