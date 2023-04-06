@@ -75,24 +75,49 @@ router.get('/', function (req, res, next) {
 
 router.post('/adquery1', function(req, res, next) {
     var queriedState = req.body.stateName; 
-    console.log(req.body.stateName)
+    var authHeader = req.headers.token;
+    // console.log(req.headers);
+    var  token, username;
+    if(authHeader) {
+        token = req.headers.token;
+        username = req.headers.username;
+    }
+    // console.log(token,username);
+    // console.log(isTokenValid);
     var sample_query = `SELECT location, bed_utl, vacc_ratio
     FROM
     (
-    SELECT location, AVG(BED_UTILIZATION) AS bed_utl, AVG(daily_vaccinations_per_million) AS vacc_ratio
-    FROM covid_trail1.vacc LEFT OUTER JOIN covid_trail1.hospital
-    ON (vacc.location = hospital.STATE_NAME)
-    GROUP BY location
-    ) AS tab1
-    WHERE bed_utl IS NOT NULL and vacc_ratio IS NOT NULL and location = '${queriedState}'
-    ORDER BY location
-    ;`;
-
-    console.log(sample_query)
-
+        SELECT location, AVG(BED_UTILIZATION) AS bed_utl, AVG(daily_vaccinations_per_million) AS vacc_ratio
+        FROM covid_trail1.vacc LEFT OUTER JOIN covid_trail1.hospital
+        ON (vacc.location = hospital.STATE_NAME)
+        GROUP BY location
+        ) AS tab1
+        WHERE bed_utl IS NOT NULL and vacc_ratio IS NOT NULL and location = '${queriedState}'
+        ORDER BY location
+        ;`;
+        
+        // console.log(sample_query)
+        
+        
+        
     con.query(sample_query, function(err, result) {
         if (err) throw err;
-        console.log(result[0]);
+        const isTokenValid = DB_CONFIG.isSignatureValid(token,username);
+        if(isTokenValid) {
+            // console.log('token is valid');
+            // const insert_userQuery_table = `
+            // INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultIndex)
+            // VALUES ('${username}', '${queriedState}', 'ADQ1', '${result[0]}', 1);
+            // `;
+            console.log(result[0]);
+            // console.log(insert_userQuery_table);
+            // con.query(insert_userQuery_table, function(err, result) {
+            //     if (err) throw err;
+            //     // console.log(result);
+            // });
+
+        }
+        // console.log(result[0]);
         res.send(result[0]);
     });
 });

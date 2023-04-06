@@ -125,8 +125,7 @@ con.connect(function(err) {
     });
 
     /**
-     * @todo : create another table that associates user with their data 
-     * data should include : (0) auto-incremented index (serve as primary key) (1) username (2) query content (3) query type (4) query result (5) query result index
+     * data should include : (0) auto-incremented index (serve as primary key) + time (1) username (2) query content (3) query type (4) query result (5) query result index
      * CREATE TABLE queries (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL,
@@ -138,6 +137,37 @@ con.connect(function(err) {
      * Note : add primary key, just use an index to do it. (implemented like above)
     * table should also be in covidgcp database
      */
+    check_user_table = `SELECT EXISTS(
+        SELECT * FROM information_schema.tables 
+        WHERE table_schema = 'covidgcp' 
+        AND table_name = 'userQuery'
+        );`;
+    const user_query_table = `
+    CREATE TABLE IF NOT EXISTS covidgcp.userQuery (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        username VARCHAR(255) NOT NULL,
+        queryContent TEXT,
+        queryType VARCHAR(50) ,
+        queryResult TEXT,
+        resultName TEXT
+    );
+    `;
+    /**
+     * INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultIndex) 
+     * VALUES ('john_doe', 'SELECT * FROM patients WHERE diagnosis="COVID-19"', 'SELECT', 'Returned 10 rows', 1);
+     * This is an example of how to insert data into the table, note that time field is automatically filled with current time  
+     */
+    con.query(check_user_table, function (err, result) {
+        if (err) throw err;
+        // console.log(Object.values(result[0])[0]); 
+        if(0==Object.values(result[0])[0]){
+            con.query(user_query_table,function (err, result) {
+                if (err) throw err;
+                console.log("covidgcp userQuery table created");
+            });
+        }
+    });
     
 
     // dev : run sql unit test
