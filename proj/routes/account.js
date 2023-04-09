@@ -279,7 +279,59 @@ router.post('/login',(req,res) => {
     });
 });
 
-
+router.post('/updatePassword',(req,res) => {
+    const username = req.body.username;
+    const original_password = req.body.original_password;
+    const new_password = req.body.new_password;
+    console.log("Test1"); 
+    // TODO: CHANGE THIS FROM THE LOGIN INFORMATION TO THE UPDATE INFORMATION
+    con.connect(function(err) {
+        if (err) throw err;
+        console.log("login : Data Base Connected!");
+        var check_user_table = `SELECT EXISTS(
+            SELECT * FROM information_schema.tables 
+            WHERE table_schema = 'covidgcp' 
+            AND table_name = 'users'
+            );`;
+        con.query(check_user_table, function (err, result) {
+            if (err) throw err;
+            // console.log(Object.values(result[0])[0]); 
+            if(Object.values(result[0])[0]){ // table exists
+                var sql_username_exist=`SELECT EXISTS(
+                    SELECT username FROM covidgcp.users WHERE (username = '${username}' AND password = '${original_password}') OR (email = '${username}' AND password = '${original_password}')
+                    );`;
+                con.query(sql_username_exist,function (err, result) {
+                    if (err) throw err;
+                    if(Object.values(result[0])[0]){ // login success
+                        // we return a token
+                        const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+                        res.json({ success: true, message: 'Authentication successful', token });
+                        var sql_command=`UPDATE covidgcp.users 
+                                SET password = '${new_password}'
+                                WHERE (username = '${username}' AND password = '${original_password}') 
+                                OR (email = '${username}' AND password = '${original_password}')`;
+                        con.query(sql_command, function(err, restult){
+                            if (err){
+                                throw err;
+                            } 
+                            else{
+                                console.log("New Password was updated successfully.");
+                            }
+                        });
+                    }
+                    else{
+                        res.send("Failed : incorrect username/password");
+                        console.log('please enter the correct username/password');
+                    }
+                });
+                
+            }else{
+                res.send("Failed : Table doesn't exist");
+            }
+    
+        });
+    });
+});
 
 
 

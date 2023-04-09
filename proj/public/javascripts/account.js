@@ -1,6 +1,7 @@
 let COMMUNICATION = 'http://34.16.138.110:8443/';
 let LOGIN_API = '/account/login';
 let REGSTER_API = '/account/register';
+let UPDATE_API = '/account/updatePassword'
 let DASHBOARD_API = '/dashboard';
 let TRY_DASHBOARD_API = '/account/trydashboard';
 /** 
@@ -64,6 +65,7 @@ function submit_login_info(){
     var password=document.querySelector("#form__input--loginpassword").value;
     console.log(username);
     console.log(password);
+    console.log("Test1"); 
     if(password.includes("'") ) {
         return false;
     }
@@ -142,7 +144,52 @@ function submit_regstration_info(){
 }
 
 
+/**
+ * update the password for a user 
+ */
+function update_password(){
+    var username=document.querySelector("#signupUsername2").value;
+    var original_password=document.querySelector("#form__input--originalPassword").value;
+    var new_password=document.querySelector("#form__input--newPassword").value;
+    var new_confirmed_password=document.querySelector("#form__input--newconfirmedpassword").value;
+    
+    console.log(username);
+    console.log(original_password);
+    console.log(new_password);
+    console.log(new_confirmed_password);
+    
+    
+    if(original_password.includes("'") || 
+        new_password.includes("'") ||
+        new_password == original_password || 
+        new_password != new_confirmed_password ) {
+        return false;
+    }
 
+    return new Promise(function(resolve, reject) {
+        const instance = axios.create({baseURL: COMMUNICATION});
+        instance.post(UPDATE_API, {
+            username: username,
+            original_password: original_password,
+            new_password : new_password
+        })
+        .then(function (response) {
+            if(response.data.success) {
+                const token = response.data.token;
+                localStorage.setItem('token', token); // Save the token in localStorage
+                localStorage.setItem('username', username); // Save the username in localStorage
+                dashboard();
+                resolve(true); // pointless
+            }else{
+                resolve(false);
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    });
+
+}
 
 
 /**
@@ -202,6 +249,25 @@ document.addEventListener("DOMContentLoaded", () => {
     /**
      * 2. handle the submit request by overwritting submit event for the form.
      */
+
+    changePasswordForm.addEventListener("submit", e => {
+            e.preventDefault();
+            console.log("change password");
+            update_password().then(function(result) {
+
+                if(!result) {
+                    setFormMessage(loginForm, "error", "username has been registered");
+                }
+                else{
+                    loginForm.classList.remove("form--hidden");
+                    changePasswordForm.classList.add("form--hidden");
+                    isFormLogin=true;
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }); 
+        });
+
     loginForm.addEventListener("submit", e => {
         e.preventDefault();
         // Perform your AJAX/Fetch login

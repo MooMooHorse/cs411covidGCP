@@ -21,11 +21,18 @@
 <!-- Body Section -->
 
 <form id="state-form">
-    <label for="state-select">Select a state:</label>
+    <label for="state-select">Select a state (Vaccination):</label>
     <input type="text" id="state-input">
     <button type="submit">Submit</button>
 </form>
 <div id="state-data"></div>
+
+<form id="hospital-form">
+    <label for="hospital-select">Select a state (Hospital Count):</label>
+    <input type="text" id="hospital-input">
+    <button type="submit">Submit</button>
+</form>
+<div id="hospital-data"></div>
    
 </body>
 <!-- Assorted JS files : Order DOES matter, files to be included should be placed before the "includers" -->
@@ -110,6 +117,10 @@
 
     console.log(stateNames); 
     $('#state-input').autocomplete({
+        source: stateNames
+    });
+
+    $('#hospital-input').autocomplete({
         source: stateNames
     });
 
