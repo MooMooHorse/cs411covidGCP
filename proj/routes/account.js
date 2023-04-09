@@ -125,8 +125,7 @@ con.connect(function(err) {
     });
 
     /**
-     * @todo : create another table that associates user with their data 
-     * data should include : (0) auto-incremented index (serve as primary key) (1) username (2) query content (3) query type (4) query result (5) query result index
+     * data should include : (0) auto-incremented index (serve as primary key) + time (1) username (2) query content (3) query type (4) query result (5) query result index
      * CREATE TABLE queries (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL,
@@ -138,6 +137,37 @@ con.connect(function(err) {
      * Note : add primary key, just use an index to do it. (implemented like above)
     * table should also be in covidgcp database
      */
+    check_user_table = `SELECT EXISTS(
+        SELECT * FROM information_schema.tables 
+        WHERE table_schema = 'covidgcp' 
+        AND table_name = 'userQuery'
+        );`;
+    const user_query_table = `
+    CREATE TABLE IF NOT EXISTS covidgcp.userQuery (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        username VARCHAR(255) NOT NULL,
+        queryContent TEXT,
+        queryType VARCHAR(50) ,
+        queryResult TEXT,
+        resultName TEXT
+    );
+    `;
+    /**
+     * INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultIndex) 
+     * VALUES ('john_doe', 'SELECT * FROM patients WHERE diagnosis="COVID-19"', 'SELECT', 'Returned 10 rows', 1);
+     * This is an example of how to insert data into the table, note that time field is automatically filled with current time  
+     */
+    con.query(check_user_table, function (err, result) {
+        if (err) throw err;
+        // console.log(Object.values(result[0])[0]); 
+        if(0==Object.values(result[0])[0]){
+            con.query(user_query_table,function (err, result) {
+                if (err) throw err;
+                console.log("covidgcp userQuery table created");
+            });
+        }
+    });
     
 
     // dev : run sql unit test
@@ -249,7 +279,59 @@ router.post('/login',(req,res) => {
     });
 });
 
-
+router.post('/updatePassword',(req,res) => {
+    const username = req.body.username;
+    const original_password = req.body.original_password;
+    const new_password = req.body.new_password;
+    console.log("Test1"); 
+    // TODO: CHANGE THIS FROM THE LOGIN INFORMATION TO THE UPDATE INFORMATION
+    con.connect(function(err) {
+        if (err) throw err;
+        console.log("login : Data Base Connected!");
+        var check_user_table = `SELECT EXISTS(
+            SELECT * FROM information_schema.tables 
+            WHERE table_schema = 'covidgcp' 
+            AND table_name = 'users'
+            );`;
+        con.query(check_user_table, function (err, result) {
+            if (err) throw err;
+            // console.log(Object.values(result[0])[0]); 
+            if(Object.values(result[0])[0]){ // table exists
+                var sql_username_exist=`SELECT EXISTS(
+                    SELECT username FROM covidgcp.users WHERE (username = '${username}' AND password = '${original_password}') OR (email = '${username}' AND password = '${original_password}')
+                    );`;
+                con.query(sql_username_exist,function (err, result) {
+                    if (err) throw err;
+                    if(Object.values(result[0])[0]){ // login success
+                        // we return a token
+                        const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+                        res.json({ success: true, message: 'Authentication successful', token });
+                        var sql_command=`UPDATE covidgcp.users 
+                                SET password = '${new_password}'
+                                WHERE (username = '${username}' AND password = '${original_password}') 
+                                OR (email = '${username}' AND password = '${original_password}')`;
+                        con.query(sql_command, function(err, restult){
+                            if (err){
+                                throw err;
+                            } 
+                            else{
+                                console.log("New Password was updated successfully.");
+                            }
+                        });
+                    }
+                    else{
+                        res.send("Failed : incorrect username/password");
+                        console.log('please enter the correct username/password');
+                    }
+                });
+                
+            }else{
+                res.send("Failed : Table doesn't exist");
+            }
+    
+        });
+    });
+});
 
 
 
