@@ -97,6 +97,32 @@ router.post('/adquery1', function(req, res, next) {
     });
 });
 
+// DUPLICATED
+router.post('/adquery2', function(req, res, next) {
+    // var queriedRatio = req.body.stateName; 
+    console.log(req.body.stateName)
+
+    var sample_query = `       
+        SELECT 
+            covid_trail1.States.State_Name, 
+            count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
+        FROM covid_trail1.hospital JOIN covid_trail1.States USING (State_Name)
+        GROUP BY covid_trail1.States.State_Name
+        ORDER BY covid_trail1.States.State_Name
+        ;`;
+        
+        // console.log(sample_query)
+
+    console.log(sample_query)
+
+    con.query(sample_query, function(err, result) {
+        if (err) throw err;
+        console.log(result[0]);
+        res.send(result[0]);
+    });
+});
+
+
 
 function mysql_main_unit_test() {
     if (DEBUG_SQL & DEBUG_SQL_advanced1) {

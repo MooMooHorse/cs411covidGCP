@@ -98,7 +98,52 @@ router.post('/adquery1', function(req, res, next) {
         
         // console.log(sample_query)
         
+    con.query(sample_query, function(err, result) {
+        if (err) throw err;
+        const isTokenValid = DB_CONFIG.isSignatureValid(token,username);
+        if(isTokenValid) {
+            console.log('token is valid');
+            /**
+             * @todo:
+             * store the query and the result in the database, now we hae user name, query and query result.
+             */
+        }
+    // console.log(result[0]);
+        res.send(result[0]);
+    });
+});
+
+
+// DUPLICATED
+// Locate all locations with a vacc ratio less than state
+router.post('/adquery2', function(req, res, next) {
+    var queriedHospital = req.body.hospitalName; 
+    var authHeader = req.headers.token;
+    // console.log(req.headers);
+    var  token, username;
+    if(authHeader) {
+        token = req.headers.token;
+        username = req.headers.username;
+    }
+    // console.log(token,username);
+    // console.log(isTokenValid);
+
+    // Locate all locations with a vacc ratio less than state
+
+    var sample_query = `       
+        SELECT 
+            covid_trail1.States.State_Name, 
+            count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
+        FROM covid_trail1.hospital JOIN covid_trail1.States USING (State_Name)
+        WHERE covid_trail1.States.State_Name = '${queriedHospital}'
+        GROUP BY covid_trail1.States.State_Name
+        ORDER BY covid_trail1.States.State_Name
+        ;`;
+
+
+
         
+        // console.log(sample_query)
         
     con.query(sample_query, function(err, result) {
         if (err) throw err;
