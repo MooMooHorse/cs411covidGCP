@@ -145,34 +145,19 @@ router.post('/adquery2', function(req, res, next) {
         
         // console.log(sample_query)
         
-        con.query(sample_query, function(err, result) {
-            if (err) throw err;
-            const isTokenValid = DB_CONFIG.isSignatureValid(token,username);
-            if(isTokenValid) {
-                // console.log('token is valid');
-                const insert_userQuery_table1 = `
-                INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultName)
-                VALUES ('${username}', '${queriedState}', 'ADQ1', '${result[0].bed_utl}', 'bed_utl');
-                `;
-                const insert_userQuery_table2 = `
-                INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultName)
-                VALUES ('${username}', '${queriedState}', 'ADQ1', '${result[0].vacc_ratio}', 'vacc_ratio');
-                `;
-                // console.log(result[0]);
-                // console.log(insert_userQuery_table);
-                con.query(insert_userQuery_table1, function(err, result) {
-                    if (err) throw err;
-                    // console.log(result);
-                });
-                con.query(insert_userQuery_table2, function(err, result) {
-                    if (err) throw err;
-                    // console.log(result);
-                });
-    
-            }
-            // console.log(result[0]);
-            res.send(result[0]);
-        });
+    con.query(sample_query, function(err, result) {
+        if (err) throw err;
+        const isTokenValid = DB_CONFIG.isSignatureValid(token,username);
+        if(isTokenValid) {
+            console.log('token is valid');
+            /**
+             * @todo:
+             * store the query and the result in the database, now we hae user name, query and query result.
+             */
+        }
+    // console.log(result[0]);
+        res.send(result[0]);
+    });
 });
 
 
