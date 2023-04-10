@@ -196,5 +196,42 @@ function mysql_main_unit_test() {
     }
 }
 
+// paper search
+router.post('/papersearch', function (req, res, next) {
+    var searchTitle = req.body.titleName;
+    var searchAuthor = req.body.authorName;
+    var searchJournal = req.body.journalName;
+    var authHeader = req.headers.token;
+    var token, username;
+    if (authHeader) {
+        token = req.headers.token;
+        username = req.headers.username;
+    }
+
+    console.log(req.body.titleName);
+    console.log(req.body.authorName);
+    console.log(req.body.journalName);
+
+
+    var sample_query = `       
+        SELECT count(p.paper_id) as papercnt
+        FROM covid_trail1.papers p
+        WHERE p.title LIKE '%${searchTitle}%' and p.authors LIKE '%${searchAuthor}%' and p.journal LIKE '%${searchJournal}%'
+        ;`;
+
+    // console.log(sample_query)
+
+    console.log(sample_query)
+
+    con.query(sample_query, function (err, result) {
+        if (err) throw err;
+        const isTokenValid = DB_CONFIG.isSignatureValid(token, username);
+        if (isTokenValid) {
+            console.log(result[0]);
+        }
+        res.send(result[0]);
+    });
+});
+
 
 module.exports = router;

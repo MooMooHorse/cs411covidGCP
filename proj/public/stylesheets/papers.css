@@ -1,4 +1,3 @@
-
 .search-form {
   background-color: #f2f2f2;
   padding: 10px;
@@ -29,5 +28,5 @@
 
 .search-form button[type="submit"]:hover {
   background-color: #3e8e41;
-}
+} 
 

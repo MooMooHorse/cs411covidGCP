@@ -20,33 +20,31 @@
       <p><br /><br /><br /></p>
     </div>
 
-    <div id="search bar">
-      <form id="search-form" class="search-form" action="/search" method="GET">
-        <input type="text" name="query" placeholder="Search..." />
+    <div id="paper search bar">
+      <form id="paper-form" action="/search" method="GET">
+        <label for="title">Title:</label><br />
+        <input type="text" id="title-input"/><br />
+        <label for="author">Author:</label><br />
+        <input type="text" id="author-input" /><br />
+        <label for="journal">Journal:</label><br />
+        <input type="text" id="journal-input" /><br />
         <button type="submit">Search</button>
       </form>
     </div>
-
     <br />
-
-    <div id="search-results" style="color: rebeccapurple"></div>
+    <div id="paper-data"></div>
   </body>
   <!-- Assorted JS files : Order DOES matter, files to be included should be placed before the "includers" -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="/javascripts/config.js"></script>
   <!-- <script src="interactive-and-responsive-svg-map-of-us-states-capitals/map.js"></script> -->
   <script src="/javascripts/menu.js"></script>
-  <script>
-    const searchForm = document.querySelector('#search-form')
-    const searchResults = document.querySelector('#search-results')
-    searchForm.addEventListener('submit', event => {
-      event.preventDefault() // prevent from page reloading
 
-      const query = searchForm.querySelector('input[name="query"]').value // read search text
+  <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="//code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-      searchResults.innerHTML = `search request: ${query}`
-    })
-  </script>
+  <script src="/javascripts/papers.js"></script>
 
   <!-- <script src="timeline.js"></script> -->
 </html>
