@@ -54,7 +54,8 @@ con.connect(function (err) {
   console.log("Connected for main!");
   // mysql_main_unit_test();
 });
-// paper search
+
+// satisfied paper count
 router.post('/papersearch', function (req, res, next) {
     var searchTitle = req.body.titleName;
     var searchAuthor = req.body.authorName;
@@ -78,7 +79,6 @@ router.post('/papersearch', function (req, res, next) {
         WHERE p.title LIKE '%${searchTitle}%' and p.authors LIKE '%${searchAuthor}%' and p.journal LIKE '%${searchJournal}%'
         ;`;
 
-    // console.log(sample_query)
 
     con.query(sample_query, function (err, result) {
         if (err) throw err;
@@ -94,8 +94,44 @@ router.post('/papersearch', function (req, res, next) {
                 // console.log(result);
             });
         }
+        // console.log(result);
         res.send(result[0]);
     });
 });
+
+// satisfied 10 papers
+router.post('/papersearch1', function (req, res, next) {
+  var searchTitle = req.body.titleName;
+  var searchAuthor = req.body.authorName;
+  var searchJournal = req.body.journalName;
+
+  var authHeader = req.headers.token;
+  var token, username;
+  if (authHeader) {
+    token = req.headers.token;
+    username = req.headers.username;
+  }
+
+  // console.log(req.body.titleName);
+  // console.log(req.body.authorName);
+  // console.log(req.body.journalName);
+
+
+  var sample_query = `       
+        SELECT p.title as papertitle, p.authors as paperauthor, p.journal as paperjournal, p.publish_time as papertime
+        FROM covid_trail1.papers p
+        WHERE p.title LIKE '%${searchTitle}%' and p.authors LIKE '%${searchAuthor}%' and p.journal LIKE '%${searchJournal}%'
+        ;`;
+
+
+  con.query(sample_query, function (err, result) {
+    if (err) throw err;
+
+    // console.log(result.slice(0, Math.min(result.length, 10)));
+    res.send(result.slice(0, Math.min(result.length, 10)));
+  });
+});
+
+
 
 module.exports = router;

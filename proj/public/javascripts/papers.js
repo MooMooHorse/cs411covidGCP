@@ -1,6 +1,7 @@
 let COMMUNICATION = 'http://34.16.138.110:8443/';
 
 let paperAPI = '/papers/papersearch'
+let paperAPI1 = 'papers/papersearch1'
 const form = document.getElementById('paper-form');
 const titleInput = document.getElementById('title-input');
 const authorInput = document.getElementById('author-input');
@@ -41,7 +42,7 @@ form.addEventListener('submit', event => {
     }
     console.log(myheader);
     instance.post(paperAPI, { titleName: title, authorName: author, journalName: journal }, myheader).then(response => {
-      var data = response.data;
+      var data = response.data; // paper count
 
       // Display the data for the selected state
       paperData.innerHTML = `
@@ -50,6 +51,42 @@ form.addEventListener('submit', event => {
 
       resolve(data);
     })
+
+    instance.post(paperAPI1, { titleName: title, authorName: author, journalName: journal }, myheader).then(response => {
+      var data = response.data; // paper title, authors, journals
+      // console.log(data);
+
+      const table = document.getElementById('PaperSearchTable');
+      const tbody = table.getElementsByTagName('tbody')[0];
+
+      // Clear the table
+      tbody.innerHTML = '';
+
+      data.forEach(item => {
+        const row = tbody.insertRow();
+
+        const titleCell = row.insertCell();
+        titleCell.textContent = item.papertitle;
+
+        const authorCell = row.insertCell();
+        authorCell.textContent = item.paperauthor;
+
+        const journalCell = row.insertCell();
+        journalCell.textContent = item.paperjournal;
+
+        const publish_timeCell = row.insertCell();
+        publish_timeCell.textContent = item.papertime;
+      });
+
+      // Display the data for the selected state
+      // paperData.innerHTML = `
+      //       <p>Satisfied Paper Count: ${data.papercnt}</p>
+      //       `;
+
+      resolve(data);
+    })
+
+
       .catch(error => {
         console.error('Error fetching paper data:', error);
         reject(error);
