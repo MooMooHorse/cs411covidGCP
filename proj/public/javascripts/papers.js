@@ -1,6 +1,6 @@
 let COMMUNICATION = 'http://34.16.138.110:8443/';
 
-let paperAPI = '/papersearch'
+let paperAPI = '/papers/papersearch'
 const form = document.getElementById('paper-form');
 const titleInput = document.getElementById('title-input');
 const authorInput = document.getElementById('author-input');
