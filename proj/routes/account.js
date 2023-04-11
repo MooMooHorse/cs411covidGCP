@@ -149,8 +149,8 @@ con.connect(function(err) {
         username VARCHAR(255) NOT NULL,
         queryContent TEXT,
         queryType VARCHAR(50) ,
-        queryResult TEXT,
-        resultName TEXT
+        resultName TEXT,
+        queryResult TEXT
     );
     `;
     /**

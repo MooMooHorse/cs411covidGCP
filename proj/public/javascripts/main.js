@@ -24,15 +24,18 @@ form.addEventListener('submit', (event) => {
         var token = localStorage.getItem('token');
         var username = localStorage.getItem('username');
         // console.log(token, username);
-        var myheader = {headers : {
-            'Content-Type': 'application/json',
-        }};
-        // console.log(token, username);
-        if(token && username) {
-            myheader = {headers : {
+        var myheader = {
+            headers: {
                 'Content-Type': 'application/json',
-                'token': token,
-                'username': username
+            }
+        };
+        // console.log(token, username);
+        if (token && username) {
+            myheader = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                    'username': username
                 }
             };
         }
@@ -48,10 +51,10 @@ form.addEventListener('submit', (event) => {
 
             resolve(data);
         })
-        .catch(error => {
-            console.error('Error fetching state data:', error);
-            reject(error);
-        });
+            .catch(error => {
+                console.error('Error fetching state data:', error);
+                reject(error);
+            });
     });
 });
 
@@ -69,15 +72,18 @@ form2.addEventListener('submit', (event) => {
         var token = localStorage.getItem('token');
         var username = localStorage.getItem('username');
         // console.log(token, username);
-        var myheader = {headers : {
-            'Content-Type': 'application/json',
-        }};
-        // console.log(token, username);
-        if(token && username) {
-            myheader = {headers : {
+        var myheader = {
+            headers: {
                 'Content-Type': 'application/json',
-                'token': token,
-                'username': username
+            }
+        };
+        // console.log(token, username);
+        if (token && username) {
+            myheader = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                    'username': username
                 }
             };
         }
@@ -94,10 +100,10 @@ form2.addEventListener('submit', (event) => {
 
             resolve(data);
         })
-        .catch(error => {
-            console.error('Error fetching hospital data:', error);
-            reject(error);
-        });
+            .catch(error => {
+                console.error('Error fetching hospital data:', error);
+                reject(error);
+            });
 
     });
 });
