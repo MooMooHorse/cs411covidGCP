@@ -76,6 +76,9 @@ form.addEventListener('submit', event => {
 
         const publish_timeCell = row.insertCell();
         publish_timeCell.textContent = item.papertime;
+
+        const searchtimesCell = row.insertCell();
+        searchtimesCell.textContent = item.searchtimes;
       });
 
       // Display the data for the selected state
