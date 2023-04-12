@@ -21,7 +21,7 @@
 <!-- Body Section -->
 
 <form id="state-form">
-    <label for="state-select">Select a state (Vaccination):</label>
+    <label for="state-select">Select a state:</label>
     <input type="text" id="state-input">
     <button type="submit">Submit</button>
 </form>
@@ -117,10 +117,6 @@
 
     console.log(stateNames); 
     $('#state-input').autocomplete({
-        source: stateNames
-    });
-
-    $('#hospital-input').autocomplete({
         source: stateNames
     });
 

@@ -1,0 +1,16 @@
+.paper-form table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.paper-form td,
+.paper-form th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.paper-form tr:nth-child(even) {
+  background-color: #dddddd;
+}
