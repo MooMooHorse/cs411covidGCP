@@ -156,6 +156,33 @@ router.post('/papersearch', function (req, res, next) {
 //   });
 // });
 
+function updateSearchTimes(paper_id) {
+  return new Promise((resolve, reject) => {
+    // Prepare the update query
+    var update_query = `
+      INSERT INTO covidgcp.paper_searchtimes (paper_id, search_times)
+      VALUES (?, 1)
+      ON DUPLICATE KEY UPDATE search_times = search_times + 1;
+    `;
+
+    // Execute the update query
+    con.query(update_query, [paper_id], function (err, update_result) {
+      if (err) {
+        reject(err);
+      } else {
+        // Retrieve the updated search_times value
+        con.query("SELECT search_times FROM covidgcp.paper_searchtimes WHERE paper_id = ?", [paper_id], function (err, searchTimesResult) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(searchTimesResult[0].search_times);
+          }
+        });
+      }
+    });
+  });
+}
+
 router.post('/papersearch1', function (req, res, next) {
   var searchTitle = req.body.titleName;
   var searchAuthor = req.body.authorName;
@@ -172,6 +199,7 @@ router.post('/papersearch1', function (req, res, next) {
         SELECT p.title as papertitle, p.authors as paperauthor, p.journal as paperjournal, p.publish_time as papertime, p.paper_id as paperid
         FROM covid_trail1.papers p
         WHERE p.title LIKE '%${searchTitle}%' and p.authors LIKE '%${searchAuthor}%' and p.journal LIKE '%${searchJournal}%'
+        ORDER BY paper_id asc
         ;`;
 
   con.query(sample_query, function (err, result) {
@@ -180,42 +208,19 @@ router.post('/papersearch1', function (req, res, next) {
       // Create an array to store the promises for each update query
       let promises = [];
 
-      // Loop through the result array
-      result.forEach(function (row) {
+      let maxIterations = Math.min(result.length, 10);
+      for (let i = 0; i < maxIterations; i++) {
+        let row = result[i];
+        // Your code to process the row goes here
         // Extract paper_id from the row
         var paper_id = row.paperid;
+        // console.log(paper_id);
 
-        // Create a new promise for this update query
-        let promise = new Promise((resolve, reject) => {
-          // Prepare the update query
-          var update_query = `
-            INSERT INTO covidgcp.paper_searchtimes (paper_id, search_times)
-            VALUES (?, 1)
-            ON DUPLICATE KEY UPDATE search_times = search_times + 1;
-          `;
-
-          // Execute the update query
-          con.query(update_query, [paper_id], function (err, update_result) {
-            if (err) {
-              reject(err);
-            } else {
-              // Retrieve the updated search_times value
-              con.query("SELECT search_times FROM covidgcp.paper_searchtimes WHERE paper_id = ?", [paper_id], function (err, searchTimesResult) {
-                if (err) {
-                  reject(err);
-                } else {
-                  // Add the search_times to the row
-                  row.searchtimes = searchTimesResult[0].search_times;
-                  resolve();
-                }
-              });
-            }
-          });
-        });
-
-        // Add the promise to the promises array
-        promises.push(promise);
-      });
+        // Call the updateSearchTimes function and store the promise
+        promises.push(updateSearchTimes(paper_id).then(searchtimes => {
+          row.searchtimes = searchtimes;
+        }));
+      }
 
       // Wait for all promises to resolve
       Promise.all(promises).then(() => {
@@ -234,6 +239,7 @@ router.post('/papersearch1', function (req, res, next) {
     }
   });
 });
+
 
 
 
