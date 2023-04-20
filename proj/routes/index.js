@@ -101,7 +101,10 @@ router.post('/adquery1', function (req, res, next) {
 
 
     con.query(sample_query, function (err, result) {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.status(500).send('An error occurred while fetching the data.');
+        }
         const isTokenValid = DB_CONFIG.isSignatureValid(token, username);
         if (isTokenValid) {
             // console.log('token is valid');
@@ -158,7 +161,10 @@ router.post('/adquery2', function (req, res, next) {
 
 
     con.query(sample_query, function (err, result) {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.status(500).send('An error occurred while fetching the data.');
+        }
         const isTokenValid = DB_CONFIG.isSignatureValid(token, username);
         if (isTokenValid) {
             // console.log('token is valid');
@@ -185,6 +191,41 @@ router.post('/adquery2', function (req, res, next) {
         }
         console.log(result[0]);
         res.send(result[0]);
+    });
+});
+
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 120 }); // 1 hour expiration time
+
+router.get('/map', function (req, res, next) {
+    const cachedData = cache.get('map_data');
+    if (cachedData) {
+        return res.send(cachedData);
+    }
+    
+    const map_query = `
+        SELECT location, Latitude, Longitude, HOSP_NUM, NUM_ICU_BEDS,  NUM_LICENSED_BEDS
+            , BED_UTILIZATION, Potential_Increase_In_Bed_Capac,
+            total_vaccinations_per_hundred, people_fully_vaccinated_per_hundred
+        FROM(
+            SELECT location, States.Latitude, States.Longitude, COUNT(hospital.OBJECTID) AS HOSP_NUM, SUM(NUM_ICU_BEDS) AS NUM_ICU_BEDS,
+            SUM(NUM_LICENSED_BEDS) AS NUM_LICENSED_BEDS, AVG(BED_UTILIZATION) as BED_UTILIZATION, 
+            SUM(Potential_Increase_In_Bed_Capac) AS Potential_Increase_In_Bed_Capac, AVG(total_vaccinations_per_hundred) AS total_vaccinations_per_hundred,
+            AVG(people_fully_vaccinated_per_hundred) AS people_fully_vaccinated_per_hundred
+            FROM covid_trail1.vacc LEFT OUTER JOIN covid_trail1.hospital ON (vacc.location = hospital.STATE_NAME) 
+            LEFT OUTER JOIN covid_trail1.States ON (hospital.STATE_NAME = States.STATE_NAME)
+            GROUP BY location,States.Latitude, States.Longitude
+        ) AS tab
+        WHERE Latitude IS NOT NULL and Longitude IS NOT NULL`;
+
+    con.query(map_query, function (err, result) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('An error occurred while fetching the data.');
+        }
+
+        cache.set('map_data', result);
+        res.send(result);
     });
 });
 
