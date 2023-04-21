@@ -26,16 +26,16 @@ console.log(DB_HOST_IP);
 // Forgive this C style testing.
 
 let DEBUG_SQL_NODEBUG = 0;
-let DEBUG_SQL_INSERT0 = (1<<0);
-let DEBUG_SQL_QUERY0  = (1<<1);
+let DEBUG_SQL_INSERT0 = (1 << 0);
+let DEBUG_SQL_QUERY0 = (1 << 1);
 
-let DEBUG_SQL = ( DEBUG_SQL_NODEBUG );
+let DEBUG_SQL = (DEBUG_SQL_NODEBUG);
 
 // end of dev area
 
 const path = require('path');
 const mysql = require('mysql2');
-const cors=require("cors");
+const cors = require("cors");
 var bodyParser = require('body-parser');
 
 // parse routerlication/x-www-form-urlencoded
@@ -51,15 +51,17 @@ var con = mysql.createConnection({
     host: DB_HOST_IP,
     user: DB_USR,
     password: DB_PSW
-  });
+});
 
 
 // router to contributors
-router.get('/', function(req, res, next) {
-    res.render('account', { menuBlockHeader : 'New User?', 
-    menuBlockMesg1 : 'Log in PLZ', 
-    menuBlockMesg2 : ''});
-  });
+router.get('/', function (req, res, next) {
+    res.render('account', {
+        menuBlockHeader: 'New User?',
+        menuBlockMesg1: 'Log in PLZ',
+        menuBlockMesg2: ''
+    });
+});
 
 // this API tries to log the user in based on the token given
 router.get('/trydashboard', (req, res) => {
@@ -85,11 +87,11 @@ router.get('/trydashboard', (req, res) => {
 /**
  * connect to mysql.
  */
-con.connect(function(err) {
+con.connect(function (err) {
     if (err) throw err;
     console.log("Connected for account!");
     // if there is mydb (our default database), delete it
-    con.query("DROP DATABASE IF EXISTS mydb;",function(err,result){
+    con.query("DROP DATABASE IF EXISTS mydb;", function (err, result) {
         if (err) throw err;
         console.log("default database removed");
     });
@@ -101,9 +103,9 @@ con.connect(function(err) {
     // confirm data base created
     con.query("SELECT SCHEMA_NAME \
     FROM INFORMATION_SCHEMA.SCHEMATA \
-    WHERE SCHEMA_NAME = 'covidgcp'",function (err, result) {
+    WHERE SCHEMA_NAME = 'covidgcp'", function (err, result) {
         if (err) throw err;
-        if(result.length) console.log("covidgcp database created & confirmed"); // find data base
+        if (result.length) console.log("covidgcp database created & confirmed"); // find data base
     });
     // create table
     var check_user_table = `SELECT EXISTS(
@@ -115,13 +117,36 @@ con.connect(function(err) {
     con.query(check_user_table, function (err, result) {
         if (err) throw err;
         // console.log(Object.values(result[0])[0]); 
-        if(0==Object.values(result[0])[0]){
-            con.query(sql_create_table,function (err, result) {
+        if (0 == Object.values(result[0])[0]) {
+            con.query(sql_create_table, function (err, result) {
                 if (err) throw err;
                 console.log("covidgcp users table created");
             });
         }
+    });
 
+    // create paper search times table
+        const paper_search_times_table = `
+    CREATE TABLE IF NOT EXISTS covidgcp.paper_searchtimes (
+        paper_id INT NOT NULL PRIMARY KEY,
+        search_times INT
+    );`;
+
+    var check_searchtimes_table = `SELECT EXISTS(
+        SELECT * FROM information_schema.tables 
+    WHERE table_schema = 'covidgcp' 
+    AND table_name = 'paper_searchtimes'
+    ); `;
+
+    con.query(check_searchtimes_table, function (err, result) {
+        if (err) throw err;
+        // console.log(Object.values(result[0])[0]); 
+        if (0 == Object.values(result[0])[0]) {
+            con.query(paper_search_times_table, function (err, result) {
+                if (err) throw err;
+                console.log("covidgcp searchtimes table created");
+            });
+        }
     });
 
     /**
@@ -138,21 +163,21 @@ con.connect(function(err) {
     * table should also be in covidgcp database
      */
     check_user_table = `SELECT EXISTS(
-        SELECT * FROM information_schema.tables 
+            SELECT * FROM information_schema.tables 
         WHERE table_schema = 'covidgcp' 
         AND table_name = 'userQuery'
-        );`;
+        ); `;
     const user_query_table = `
-    CREATE TABLE IF NOT EXISTS covidgcp.userQuery (
-        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        username VARCHAR(255) NOT NULL,
-        queryContent TEXT,
-        queryType VARCHAR(50) ,
-        resultName TEXT,
-        queryResult TEXT
-    );
-    `;
+    CREATE TABLE IF NOT EXISTS covidgcp.userQuery(
+            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            username VARCHAR(255) NOT NULL,
+            queryContent TEXT,
+            queryType VARCHAR(50),
+            resultName TEXT,
+            queryResult TEXT
+        );
+`;
     /**
      * INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultIndex) 
      * VALUES ('john_doe', 'SELECT * FROM patients WHERE diagnosis="COVID-19"', 'SELECT', 'Returned 10 rows', 1);
@@ -197,26 +222,26 @@ router.post('/register', (req, res) => {
     con.connect(function(err) {
         if (err) throw err;
         console.log("register : Data Base Connected!");
-        var sql_insert = `INSERT INTO covidgcp.users (username, password, email) VALUES ('${username}', '${password}', '${email}')`;
+        var sql_insert = `INSERT INTO covidgcp.users(username, password, email) VALUES('${username}', '${password}', '${email}')`;
         var check_user_table = `SELECT EXISTS(
-            SELECT * FROM information_schema.tables 
+    SELECT * FROM information_schema.tables 
             WHERE table_schema = 'covidgcp' 
             AND table_name = 'users'
-            );`;
+); `;
         con.query(check_user_table, function (err, result) {
             if (err) throw err;
             // console.log(Object.values(result[0])[0]); 
             if(Object.values(result[0])[0]){ // table exists
                 var sql_username_exist=`SELECT EXISTS(
-                    SELECT username FROM covidgcp.users WHERE username = '${username}'
-                    );`;
+    SELECT username FROM covidgcp.users WHERE username = '${username}'
+); `;
                 con.query(sql_username_exist,function (err, result) {
                     if (err) throw err;
                     if(0==Object.values(result[0])[0]){ // username not exist
                         con.query(sql_insert,function (err, result) {
                             if (err) throw err;
                             res.send("Success");
-                            console.log(`user registered with username : ${username}, email ${email}`);
+                            console.log(`user registered with username : ${ username }, email ${ email } `);
                         });
                     }
                     else{
@@ -245,17 +270,17 @@ router.post('/login',(req,res) => {
         if (err) throw err;
         console.log("login : Data Base Connected!");
         var check_user_table = `SELECT EXISTS(
-            SELECT * FROM information_schema.tables 
+    SELECT * FROM information_schema.tables 
             WHERE table_schema = 'covidgcp' 
             AND table_name = 'users'
-            );`;
+); `;
         con.query(check_user_table, function (err, result) {
             if (err) throw err;
             // console.log(Object.values(result[0])[0]); 
             if(Object.values(result[0])[0]){ // table exists
                 var sql_username_exist=`SELECT EXISTS(
-                    SELECT username FROM covidgcp.users WHERE (username = '${username}' AND password = '${password}') OR (email = '${username}' AND password = '${password}')
-                    );`;
+    SELECT username FROM covidgcp.users WHERE(username = '${username}' AND password = '${password}') OR(email = '${username}' AND password = '${password}')
+); `;
                 con.query(sql_username_exist,function (err, result) {
                     if (err) throw err;
                     if(Object.values(result[0])[0]){ // login success
@@ -263,7 +288,7 @@ router.post('/login',(req,res) => {
                         const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
                         res.json({ success: true, message: 'Authentication successful', token });
                         // res.send("Success");
-                        // console.log(`user with username/email : ${username} and password : ${password} logged in`);
+                        // console.log(`user with username / email : ${ username } and password: ${ password } logged in `);
                     }
                     else{
                         res.send("Failed : incorrect username/password");
@@ -289,17 +314,17 @@ router.post('/updatePassword',(req,res) => {
         if (err) throw err;
         console.log("login : Data Base Connected!");
         var check_user_table = `SELECT EXISTS(
-            SELECT * FROM information_schema.tables 
+    SELECT * FROM information_schema.tables 
             WHERE table_schema = 'covidgcp' 
             AND table_name = 'users'
-            );`;
+); `;
         con.query(check_user_table, function (err, result) {
             if (err) throw err;
             // console.log(Object.values(result[0])[0]); 
             if(Object.values(result[0])[0]){ // table exists
                 var sql_username_exist=`SELECT EXISTS(
-                    SELECT username FROM covidgcp.users WHERE (username = '${username}' AND password = '${original_password}') OR (email = '${username}' AND password = '${original_password}')
-                    );`;
+    SELECT username FROM covidgcp.users WHERE(username = '${username}' AND password = '${original_password}') OR(email = '${username}' AND password = '${original_password}')
+); `;
                 con.query(sql_username_exist,function (err, result) {
                     if (err) throw err;
                     if(Object.values(result[0])[0]){ // login success
@@ -308,8 +333,8 @@ router.post('/updatePassword',(req,res) => {
                         res.json({ success: true, message: 'Authentication successful', token });
                         var sql_command=`UPDATE covidgcp.users 
                                 SET password = '${new_password}'
-                                WHERE (username = '${username}' AND password = '${original_password}') 
-                                OR (email = '${username}' AND password = '${original_password}')`;
+WHERE(username = '${username}' AND password = '${original_password}')
+OR(email = '${username}' AND password = '${original_password}')`;
                         con.query(sql_command, function(err, restult){
                             if (err){
                                 throw err;
@@ -347,25 +372,25 @@ function mysql_unit_test(){
         con.connect(function(err) {
             if (err) throw err;of
             console.log("Data Base Connected!");
-            var sql_insert = `INSERT INTO covidgcp.users (username, password, email) VALUES ('${username}', '${password}', '${email}')`;
+            var sql_insert = `INSERT INTO covidgcp.users(username, password, email) VALUES('${username}', '${password}', '${email}')`;
             var check_user_table = `SELECT EXISTS(
-                SELECT * FROM information_schema.tables 
+    SELECT * FROM information_schema.tables 
                 WHERE table_schema = 'covidgcp' 
                 AND table_name = 'users'
-                );`;
+); `;
             con.query(check_user_table, function (err, result) {
                 if (err) throw err;
                 // console.log(Object.values(result[0])[0]); 
                 if(Object.values(result[0])[0]){ // table exists
                     var sql_username_exist=`SELECT EXISTS(
-                        SELECT username FROM covidgcp.users WHERE username = '${username}'
-                        );`;
+    SELECT username FROM covidgcp.users WHERE username = '${username}'
+); `;
                     con.query(sql_username_exist,function (err, result) {
                         if (err) throw err;
                         if(0==Object.values(result[0])[0]){ // username not exist
                             con.query(sql_insert,function (err, result) {
                                 if (err) throw err;
-                                console.log(`user registered with username : ${username}, email ${email}`);
+                                console.log(`user registered with username : ${ username }, email ${ email } `);
                             });
                         }
                         else{
@@ -382,23 +407,23 @@ function mysql_unit_test(){
         con.connect(function(err) {
             if (err) throw err;
             console.log("Data Base Connected!");
-            var sql_insert = `INSERT INTO covidgcp.users (username, password, email) VALUES ('${username}', '${password}', '${email}')`;
+            var sql_insert = `INSERT INTO covidgcp.users(username, password, email) VALUES('${username}', '${password}', '${email}')`;
             var check_user_table = `SELECT EXISTS(
-                SELECT * FROM information_schema.tables 
+    SELECT * FROM information_schema.tables 
                 WHERE table_schema = 'covidgcp' 
                 AND table_name = 'users'
-                );`;
+); `;
             con.query(check_user_table, function (err, result) {
                 if (err) throw err;
                 // console.log(Object.values(result[0])[0]); 
                 if(Object.values(result[0])[0]){ // table exists
                     var sql_username_exist=`SELECT EXISTS(
-                        SELECT username FROM covidgcp.users WHERE (username = '${username}' AND password = '${password}') OR (email = '${username}' AND password = '${password}')
-                        );`;
+    SELECT username FROM covidgcp.users WHERE(username = '${username}' AND password = '${password}') OR(email = '${username}' AND password = '${password}')
+); `;
                     con.query(sql_username_existof,function (err, result) {
                         if (err) throw err;
                         if(Object.values(result[0])[0]){ // login success
-                            console.log(`user with username/email : ${username} and password : ${password} logged in`);
+                            console.log(`user with username / email : ${ username } and password: ${ password } logged in `);
                         }
                         else{
                             console.log('please enter the correct username/password');

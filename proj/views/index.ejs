@@ -6,36 +6,45 @@
 <link rel="stylesheet" href="/stylesheets/main.css">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css">
-    
+
+
+
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-4LuLYZlFTnBulY8BcpS9XgRy2nLk1d/wnmpwWn7ntNn6GLoV7pF8LOFMuGM7vJ5i5y5tt5z8Lwagx7t0E2i0kg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 <!-- <link rel="stylesheet" href="timeline.css"> -->
 <!-- <link rel="stylesheet" href="interactive-and-responsive-svg-map-of-us-states-capitals/map.css"> -->
 
 </head>
 
 <body>
+    
+    <!-- Menu Section -->
+    
+    <%- include('menu') %>
+    
+    <!-- Body Section -->
+    
+    <form id="state-form">
+        <label for="state-select">Select a state:</label>
+        <input type="text" id="state-input">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="state-data"></div>
+    
+    <form id="hospital-form">
+        <label for="hospital-select">Select a state (Hospital Count):</label>
+        <input type="text" id="hospital-input">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="hospital-data"></div>
+    
+<span id = "spinner" class="loader">
+</span>
 
-<!-- Menu Section -->
+<div id="map"></div>
 
-<%- include('menu') %>
-
-<!-- Body Section -->
-
-<form id="state-form">
-    <label for="state-select">Select a state:</label>
-    <input type="text" id="state-input">
-    <button type="submit">Submit</button>
-</form>
-<div id="state-data"></div>
-
-<form id="hospital-form">
-    <label for="hospital-select">Query hospitals:</label>
-    <input type="text" id="hospital-input">
-    <button type="submit">Submit</button>
-</form>
-<div id="hospital-data"></div>
-
-   
 </body>
+
+
 <!-- Assorted JS files : Order DOES matter, files to be included should be placed before the "includers" -->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
 <script src="/javascripts/config.js"></script>
@@ -45,6 +54,13 @@
 <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="//code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDY9rEsLBB4aQLiEwZsIbjzjU9BJvpwA54&callback=initMap&v=weekly"
+    defer
+></script>
 
 <script src="/javascripts/main.js"></script>
 <script>
