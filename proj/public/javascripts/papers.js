@@ -42,81 +42,72 @@ form.addEventListener('submit', event => {
       };
     }
     console.log(myheader);
-    // display satisfied paper count
-    instance.post(paperAPI, { titleName: title, authorName: author, journalName: journal }, myheader).then(response => {
-      var data = response.data; // paper count
 
-      // Display the data for the selected state
-      paperData.innerHTML = `
-            <p>Satisfied Paper Count: ${data.papercnt}</p>
-            `;
+    instance.post(paperAPI, { titleName: title, authorName: author, journalName: journal }, myheader)
+      .then(response1 => {
+        var data1 = response1.data; // paper count
 
-      resolve(data);
-    })
+        // Display the data for the selected state
+        paperData.innerHTML = `
+      <p>Satisfied Paper Count: ${data1.papercnt}</p>
+    `;
 
-    // display 10 rows of searched papers
-    instance.post(paperAPI1, { titleName: title, authorName: author, journalName: journal }, myheader).then(response => {
-      var data = response.data; // paper title, authors, journals
-      // console.log(data);
+        // Execute the second request
+        return instance.post(paperAPI1, { titleName: title, authorName: author, journalName: journal }, myheader);
+      })
+      .then(response2 => {
+        var data2 = response2.data; // paper title, authors, journals
 
-      const table = document.getElementById('PaperSearchTable');
-      const tbody = table.getElementsByTagName('tbody')[0];
+        const table = document.getElementById('PaperSearchTable');
+        const tbody = table.getElementsByTagName('tbody')[0];
 
-      // Clear the table
-      tbody.innerHTML = '';
+        // Clear the table
+        tbody.innerHTML = '';
 
-      data.forEach(item => {
-        const row = tbody.insertRow();
+        data2.forEach(item => {
+          const row = tbody.insertRow();
 
-        const titleCell = row.insertCell();
-        titleCell.textContent = item.papertitle;
+          const titleCell = row.insertCell();
+          titleCell.textContent = item.papertitle;
 
-        const authorCell = row.insertCell();
-        authorCell.textContent = item.paperauthor;
+          const authorCell = row.insertCell();
+          authorCell.textContent = item.paperauthor;
 
-        const journalCell = row.insertCell();
-        journalCell.textContent = item.paperjournal;
+          const journalCell = row.insertCell();
+          journalCell.textContent = item.paperjournal;
 
-        const publish_timeCell = row.insertCell();
-        publish_timeCell.textContent = item.papertime;
+          const publish_timeCell = row.insertCell();
+          publish_timeCell.textContent = item.papertime;
 
-        const searchtimesCell = row.insertCell();
-        searchtimesCell.textContent = item.searchtimes;
-      });
+          const searchtimesCell = row.insertCell();
+          searchtimesCell.textContent = item.searchtimes;
+        });
 
-      // Display the data for the selected state
-      // paperData.innerHTML = `
-      //       <p>Satisfied Paper Count: ${data.papercnt}</p>
-      //       `;
+        // Execute the third request
+        return instance.post(paperAPI2, {}, myheader);
+      })
+      .then(response3 => {
+        var data3 = response3.data; // paper title, authors, journals
 
-      resolve(data);
-    })
-    
-    // display 5 papers with highest searchtimes
-    instance.post(paperAPI2, {}, myheader).then(response => {
-      var data = response.data; // paper title, authors, journals
-      // console.log(data);
+        const table = document.getElementById('PaperRankTable');
+        const tbody = table.getElementsByTagName('tbody')[0];
 
-      const table = document.getElementById('PaperRankTable');
-      const tbody = table.getElementsByTagName('tbody')[0];
+        // Clear the table
+        tbody.innerHTML = '';
 
-      // Clear the table
-      tbody.innerHTML = '';
+        data3.forEach(item => {
+          const row = tbody.insertRow();
 
-      data.forEach(item => {
-        const row = tbody.insertRow();
+          const rankCell = row.insertCell();
+          rankCell.textContent = item.paperrank;
 
-        const rankCell = row.insertCell();
-        rankCell.textContent = item.paperrank;
+          const titleCell = row.insertCell();
+          titleCell.textContent = item.papertitle;
 
-        const titleCell = row.insertCell();
-        titleCell.textContent = item.papertitle;
-
-        const searchtimesCell = row.insertCell();
-        searchtimesCell.textContent = item.searchtimes;
-      });
-      resolve(data);
-    }) 
+          const searchtimesCell = row.insertCell();
+          searchtimesCell.textContent = item.searchtimes;
+        });
+      })
 
 
       .catch(error => {
