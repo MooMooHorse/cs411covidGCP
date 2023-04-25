@@ -147,13 +147,13 @@ form2Trig.addEventListener('submit', (event) => {
         console.log(myheader);
 
         instance.post(ADQ2APITrig, { stateName: hospital }, myheader).then(response => {
-            var data = response.data;
+            var data = (response.data)[0];
             console.log(data);
 
             // Display the data for the hospitals
             hospitalDataTrig.innerHTML = `
-            <p>State/Location: ${data.State_Name}</p>
-            <p>Number of Hospitals: ${data.num_hospitals}</p>            `;
+            <p>Number of Satisfying States: ${data.numStates}</p>
+            <p>Vaccination Rate: ${data.VaccinationRate}</p>            `;
 
             resolve(data);
         })

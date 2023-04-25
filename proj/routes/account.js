@@ -193,7 +193,76 @@ con.connect(function (err) {
             });
         }
     });
-    
+
+    // delete stored proc
+    var dropStoredProc = `   
+
+    DROP PROCEDURE IF EXISTS covid_trail1.testProc;
+
+    `;
+
+    con.query(dropStoredProc, function (err, result) {
+        if (err) throw err;
+        console.log("Stored Procedure dropped");
+    });
+
+
+
+    // create stored proc
+    const makeStoredProc = `
+            
+                CREATE PROCEDURE covid_trail1.testProc(BedNumThres INT)
+                BEGIN
+            
+                    DECLARE varStateName VARCHAR(100);
+                    DECLARE varVacNumber INT;
+                    DECLARE varHospNum INT;
+                        
+                    Declare exit_loop BOOLEAN DEFAULT FALSE;
+                        
+                    DECLARE stuCur CURSOR FOR 
+                    (
+                        SELECT location, SUM(daily_vaccinations_per_million) AS vacc_ratio, SUM(BED_UTILIZATION) AS bed_utl
+                        FROM covid_trail1.vacc LEFT OUTER JOIN covid_trail1.hospital
+                            ON (vacc.location = hospital.STATE_NAME)
+                            GROUP BY location
+                    );
+            
+                    DECLARE CONTINUE HANDLER FOR NOT FOUND SET exit_loop = TRUE;
+                        
+                    DROP TABLE IF EXISTS NewTable;
+                        
+                    CREATE TABLE NewTable(
+                        StateName VARCHAR(100) PRIMARY KEY,
+                        VacNumber INT
+                    );
+                        
+                    Open stuCur;
+                    cloop:LOOP
+                        FETCH stuCur INTO varStateName, varVacNumber, varHospNum;
+                        if exit_loop Then
+                        LEAVE cloop;
+                        end if;
+                        
+                        if varHospNum <= BedNumThres Then
+                            Insert INTO NewTable VALUE (varStateName, varVacNumber);
+                        end if;    
+                        
+                    END LOOP cloop;
+                    Close stuCur;
+                    
+                    SELECT COUNT(VacNumber) AS numStates, AVG(VacNumber) AS VaccinationRate
+                    FROM NewTable;
+                    
+                END;
+            `;
+
+    con.query(makeStoredProc, function (err, result) {
+        if (err) throw err;
+        console.log("Stored Procedure made");
+    });
+
+
 
     // dev : run sql unit test
     // mysql_unit_test();
