@@ -207,15 +207,13 @@ router.post('/adquery2Trigger', function (req, res, next) {
     }
     // console.log(token,username);
     // console.log(isTokenValid);
-    var sample_query = `         
-            SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;        
-            SELECT 
-                covid_trail1.States.State_Name, 
-                count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
-            FROM covid_trail1.hospital JOIN covid_trail1.States USING (State_Name)
-            WHERE covid_trail1.States.State_Name = '${queriedState}'
-            GROUP BY covid_trail1.States.State_Name
-            ORDER BY covid_trail1.States.State_Name;`;
+
+
+    var sample_query = `   
+
+    DROP PROCEDURE IF EXISTS covid_trail1.testProc;
+`;
+
 
     // console.log(sample_query)
 
@@ -228,23 +226,59 @@ router.post('/adquery2Trigger', function (req, res, next) {
         }
         const isTokenValid = DB_CONFIG.isSignatureValid(token, username);
         if (isTokenValid) { 
-            // console.log('token is valid');
+            console.log('token is valid');
             const insert_userQuery_table1 = `
-            INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultName)
-            VALUES ('${username}', '${queriedState}', 'ADQ2', '${result[0].State_Name}', 'state_name');
+            
+                CREATE PROCEDURE covid_trail1.testProc()
+                BEGIN
+            
+                    DECLARE varStateName VARCHAR(50);
+                    DECLARE varVacNumber INT;
+                    DECLARE varHospNum INT;
+                        
+                    Declare exit_loop BOOLEAN DEFAULT FALSE;
+                        
+                    DECLARE stuCur CURSOR FOR 
+                    (
+                        SELECT location, SUM(daily_vaccinations_per_million) AS vacc_ratio, SUM(BED_UTILIZATION) AS bed_utl
+                        FROM covid_trail1.vacc LEFT OUTER JOIN covid_trail1.hospital
+                            ON (vacc.location = hospital.STATE_NAME)
+                            GROUP BY location
+                    );
+            
+                    DECLARE CONTINUE HANDLER FOR NOT FOUND SET exit_loop = TRUE;
+                        
+                    DROP TABLE IF EXISTS NewTable;
+                        
+                    CREATE TABLE NewTable(
+                        StateName VARCHAR(10) PRIMARY KEY,
+                        VacNumber INT
+                    );
+                        
+                    Open stuCur;
+                    cloop:LOOP
+                        FETCH stuCur INTO varStateName, varVacNumber, varHospNum;
+                        if exit_loop Then
+                        LEAVE cloop;
+                        end if;
+                        
+                        if varHospNum <= 100 Then
+                            Insert INTO NewTable VALUE (varStateName, varVacNumber);
+                        end if;    
+                        
+                    END LOOP cloop;
+                    Close stuCur;
+                    
+                    SELECT COUNT(VacNumber), AVG(VacNumber)
+                    FROM NewTable;
+                    
+                END;
             `;
             const insert_userQuery_table2 = `
-            INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultName)
-            VALUES ('${username}', '${queriedState}', 'ADQ2', '${result[0].num_hospitals}', 'num_hospitals');
+                CALL covid_trail1.testProc;
             `;
             // console.log(result[0]);
             // console.log(insert_userQuery_table);
-            if(result[0].num_hospitals > 400){
-
-            }
-            else if (result[0].num_hospitals < 200){
-
-            }
 
             con.query(insert_userQuery_table1, function (err, result) {
                 if (err) throw err;
@@ -252,8 +286,9 @@ router.post('/adquery2Trigger', function (req, res, next) {
             });
             con.query(insert_userQuery_table2, function (err, result) {
                 if (err) throw err;
-                // console.log(result);
+                console.log(result);
             });
+            console.log(result[0]);
 
 
         }
