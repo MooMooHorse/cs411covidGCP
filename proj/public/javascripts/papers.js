@@ -2,6 +2,7 @@ let COMMUNICATION = 'http://34.16.138.110:8443/';
 
 let paperAPI = '/papers/papersearch'
 let paperAPI1 = 'papers/papersearch1'
+let paperAPI2 = 'papers/paperrank'
 const form = document.getElementById('paper-form');
 const titleInput = document.getElementById('title-input');
 const authorInput = document.getElementById('author-input');
@@ -41,6 +42,7 @@ form.addEventListener('submit', event => {
       };
     }
     console.log(myheader);
+    // display satisfied paper count
     instance.post(paperAPI, { titleName: title, authorName: author, journalName: journal }, myheader).then(response => {
       var data = response.data; // paper count
 
@@ -52,6 +54,7 @@ form.addEventListener('submit', event => {
       resolve(data);
     })
 
+    // display 10 rows of searched papers
     instance.post(paperAPI1, { titleName: title, authorName: author, journalName: journal }, myheader).then(response => {
       var data = response.data; // paper title, authors, journals
       // console.log(data);
@@ -88,6 +91,32 @@ form.addEventListener('submit', event => {
 
       resolve(data);
     })
+    
+    // display 5 papers with highest searchtimes
+    instance.post(paperAPI2, {}, myheader).then(response => {
+      var data = response.data; // paper title, authors, journals
+      // console.log(data);
+
+      const table = document.getElementById('PaperRankTable');
+      const tbody = table.getElementsByTagName('tbody')[0];
+
+      // Clear the table
+      tbody.innerHTML = '';
+
+      data.forEach(item => {
+        const row = tbody.insertRow();
+
+        const rankCell = row.insertCell();
+        rankCell.textContent = item.paperrank;
+
+        const titleCell = row.insertCell();
+        titleCell.textContent = item.papertitle;
+
+        const searchtimesCell = row.insertCell();
+        searchtimesCell.textContent = item.searchtimes;
+      });
+      resolve(data);
+    }) 
 
 
       .catch(error => {

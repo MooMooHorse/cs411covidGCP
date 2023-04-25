@@ -240,7 +240,19 @@ router.post('/papersearch1', function (req, res, next) {
   });
 });
 
+router.post('/paperrank', function (req, res, next) {
 
+  var sample_query = `       
+        SELECT t.paper_rank as paperrank, t.paper_title as papertitle, t.search_times as searchtimes
+        FROM covidgcp.topsearched t
+        ;`;
+
+
+  con.query(sample_query, function (err, result) {
+    if (err) throw err;
+    res.send(result.slice(0, Math.min(result.length, 5)));
+  });
+});
 
 
 
