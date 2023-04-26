@@ -13,8 +13,63 @@
     top: 400px;
     left : 100px;
 }
+
+#fc-rh {
+    position: absolute;
+    top: 600px;
+    left : 100px;
+}
+
 #pn-rh > h1{
     font-family: "Times New Roman", Times, serif;
+}
+
+#pn-lucas{
+    position: absolute;
+    top: 400px;
+    left : 500px;
+}
+
+#pn-lucas > h1{
+    font-family: "Times New Roman", Times, serif;
+}
+
+#fc-lucas {
+    position: absolute;
+    top: 600px;
+    left : 500px;
+}
+
+#pn-haowen{
+    position: absolute;
+    top: 1000px;
+    left : 100px;
+}
+
+#pn-haowen > h1{
+    font-family: "Times New Roman", Times, serif;
+}
+
+#fc-haowen {
+    position: absolute;
+    top: 1200px;
+    left : 100px;
+}
+
+#pn-denial{
+    position: absolute;
+    top: 1000px;
+    left : 500px;
+}
+
+#pn-denial > h1{
+    font-family: "Times New Roman", Times, serif;
+}
+
+#fc-denial {
+    position: absolute;
+    top: 1200px;
+    left : 500px;
 }
 
 .flip-card-inner {
