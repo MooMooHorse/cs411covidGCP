@@ -231,24 +231,26 @@ con.connect(function (err) {
         } else {
             // create simple TRIGGER
             const createTriggerQuery1 = `
-                CREATE TRIGGER covidgcp.update_topsearched_after_update
-                AFTER UPDATE ON covidgcp.paper_searchtimes
-                FOR EACH ROW
-                BEGIN
-                -- Delete all rows from topsearched table
-                DELETE FROM covidgcp.topsearched;
-                
-                -- Insert top 5 searched papers into topsearched table
-                INSERT INTO covidgcp.topsearched (paper_rank, paper_title, search_times)
-                SELECT p.paper_rank, p.paper_title, p.search_times
-                FROM (
-                    SELECT ps.paper_id, p.title AS paper_title, ps.search_times,
-                        ROW_NUMBER() OVER (ORDER BY ps.search_times DESC, ps.paper_id ASC) AS paper_rank
-                    FROM covidgcp.paper_searchtimes ps
-                    JOIN covid_trail1.papers p ON ps.paper_id = p.paper_id
-                    LIMIT 5
-                ) p;
-                END;
+            CREATE TRIGGER covidgcp.update_topsearched_after_update
+            AFTER UPDATE ON covidgcp.paper_searchtimes
+            FOR EACH ROW
+            BEGIN
+                IF NEW.search_times <> OLD.search_times THEN
+                    -- Delete all rows from topsearched table
+                    DELETE FROM covidgcp.topsearched;
+                    
+                    -- Insert top 5 searched papers into topsearched table
+                    INSERT INTO covidgcp.topsearched (paper_rank, paper_title, search_times)
+                    SELECT p.paper_rank, p.paper_title, p.search_times
+                    FROM (
+                        SELECT ps.paper_id, p.title AS paper_title, ps.search_times,
+                            ROW_NUMBER() OVER (ORDER BY ps.search_times DESC, ps.paper_id ASC) AS paper_rank
+                        FROM covidgcp.paper_searchtimes ps
+                        JOIN covid_trail1.papers p ON ps.paper_id = p.paper_id
+                        LIMIT 5
+                    ) p;
+                END IF;
+            END;
             `;
 
             con.query(createTriggerQuery1, function (err, result) {
@@ -324,7 +326,7 @@ con.connect(function (err) {
     
             DECLARE varStateName VARCHAR(100);
             DECLARE varVacNumber INT;
-            DECLARE varHospNum INT;
+            DECLARE varBedUtil INT;
                 
             Declare exit_loop BOOLEAN DEFAULT FALSE;
                 
@@ -347,21 +349,27 @@ con.connect(function (err) {
                 
             Open stuCur;
             cloop:LOOP
-                FETCH stuCur INTO varStateName, varVacNumber, varHospNum;
+                FETCH stuCur INTO varStateName, varVacNumber, varBedUtil;
                 if exit_loop Then
                 LEAVE cloop;
                 end if;
                 
-                if varHospNum <= BedNumThres Then
+                if varBedUtil <= BedNumThres Then
                     Insert INTO NewTable VALUE (varStateName, varVacNumber);
                 end if;    
                 
             END LOOP cloop;
             Close stuCur;
             
-            SELECT COUNT(VacNumber) AS numStates, AVG(VacNumber) AS VaccinationRate
-            FROM NewTable;
-            
+            SELECT COUNT(VacNumber) AS numStates, 
+                AVG(VacNumber) AS VaccinationRate, 
+                AVG(num_hospitals) AS AvNumHospitals
+            FROM NewTable NATURAL JOIN
+                (SELECT covid_trail1.States.State_Name AS numStates, count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
+                FROM covid_trail1.hospital JOIN covid_trail1.States USING (State_Name)
+                GROUP BY covid_trail1.States.State_Name
+                ) numHosp;
+
         END;
     `;
 

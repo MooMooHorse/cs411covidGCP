@@ -153,7 +153,8 @@ form2Trig.addEventListener('submit', (event) => {
             // Display the data for the hospitals
             hospitalDataTrig.innerHTML = `
             <p>Number of Satisfying States: ${data.numStates}</p>
-            <p>Vaccination Rate: ${data.VaccinationRate}</p>            `;
+            <p>Vaccination Rate: ${data.VaccinationRate}</p>  
+            <p>Average Number Hospitals: ${data.AvNumHospitals}</p>           `;
 
             resolve(data);
         })
