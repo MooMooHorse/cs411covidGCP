@@ -365,7 +365,7 @@ con.connect(function (err) {
                 AVG(VacNumber) AS VaccinationRate, 
                 AVG(num_hospitals) AS AvNumHospitals
             FROM NewTable NATURAL JOIN
-                (SELECT covid_trail1.States.State_Name AS numStates, count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
+                (SELECT covid_trail1.States.State_Name AS StateName, count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
                 FROM covid_trail1.hospital JOIN covid_trail1.States USING (State_Name)
                 GROUP BY covid_trail1.States.State_Name
                 ) numHosp;
