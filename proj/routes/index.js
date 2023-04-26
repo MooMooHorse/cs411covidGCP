@@ -146,7 +146,7 @@ router.post('/adquery2', function (req, res, next) {
     }
     // console.log(token,username);
     // console.log(isTokenValid);
-    var sample_query = `       
+    var sample_query = `         
         SELECT 
             covid_trail1.States.State_Name, 
             count(covid_trail1.hospital.HOSPITAL_NAME) as num_hospitals
@@ -178,6 +178,61 @@ router.post('/adquery2', function (req, res, next) {
             `;
             // console.log(result[0]);
             // console.log(insert_userQuery_table);
+
+            
+            con.query(insert_userQuery_table1, function (err, result) {
+                if (err) throw err;
+                // console.log(result);
+            });
+            con.query(insert_userQuery_table2, function (err, result) {
+                if (err) throw err;
+                // console.log(result);
+            });
+
+
+        }
+        console.log(result[0]);
+        res.send(result[0]);
+    });
+});
+
+router.post('/adquery2Trigger', function (req, res, next) {
+    var queriedState = req.body.stateName;
+    var authHeader = req.headers.token;
+    // console.log(req.headers);
+    var token, username;
+    if (authHeader) {
+        token = req.headers.token;
+        username = req.headers.username;
+    }
+    // console.log(token,username);
+    // console.log(isTokenValid);
+
+
+    var sample_query = `   CALL covid_trail1.testProc(${queriedState});    `;
+
+    // console.log(sample_query)
+
+    con.query(sample_query, function (err, result) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('An error occurred while fetching the data.');
+        }
+        const isTokenValid = DB_CONFIG.isSignatureValid(token, username);
+        if (isTokenValid) {
+            // console.log('token is valid');
+            const insert_userQuery_table1 = `
+            INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultName)
+            VALUES ('${username}', '${queriedState}', 'ADQ2APITri', '${result[0].State_Name}', 'state_name');
+            `;
+            const insert_userQuery_table2 = `
+            INSERT INTO covidgcp.userQuery (username, queryContent, queryType, queryResult, resultName)
+            VALUES ('${username}', '${queriedState}', 'ADQ2APITri', '${result[0].num_hospitals}', 'num_hospitals');
+            `;
+            // console.log(result[0]);
+            // console.log(insert_userQuery_table);
+
+            
             con.query(insert_userQuery_table1, function (err, result) {
                 if (err) throw err;
                 // console.log(result);
