@@ -76,12 +76,6 @@ The last part of our project which will include creating user accounts and a com
 
 
 
-## UI MOCKUP
-
-> **A low-fidelity UI mockup**
-
-![](https://s2.loli.net/2023/02/04/Ndomw3461UbPFGy.jpg)
-
 ## PROJECT WORK DISTRIBUTION
 
 > **Project work distribution**
