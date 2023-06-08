@@ -35,23 +35,15 @@ Meta data that are analyzed from Primary Data Source that contain but not limite
 
 ## Project Title 
 
-> Project Title
-
 US COVID-19 Trends 
 
 ## Project Summary
 
-> Project Summary
->
-> What are the basic functions of your web application?
 
 We are going to create a map of the United States that displays the current and past trends of the COVID-19 pandemic. The user will be able to analyze the behavior of the pandemic between different states depending on academic publications that the state is writing and releasing during a specific time period. Our website will extract data from these academic publications and display keywords and trends in an effort to understand the public response. In addition, the user will be able to see the contamination trends by observing how many people are testing positive and negative in each respective state. With these two sets of data/information the user can accurately understand the public understanding and response to the pandemic. 
 
 ## Project Description
 
-> Description of an application of your choice
->
-> What would be a good creative component (function) that can improve the functionality of your application?
 
 We are going to create a map of the United States that displays the trends of COVID-19 over a specific time period based on the academic publications that are being released by the state. The user can hover their mouse over specific areas/states and view the COVID-19 trends based on the academic publications that state is releasing. We will extract and display key words from these academic publications so that the user can understand common trends of the COVID-19 pandemic in each state respectively. 
 In addition, the user will be able to see the amount of people testing positive, testing negative, hospitalized and dying from the COVID-19 pandemic by hovering over specific states on the map. The user will be able to toggle between two settings, “Publications” and “Cases”, to analyze the statistics and common trends of the pandemic on a map of the United States. Our website will extract the most recent data from the COVID-19 data set provided by the TA’s and represent this data using a map. The user will be able to specify specific time periods that they want to better understand. 
@@ -60,21 +52,15 @@ Each of these pieces of information will compliment each other so that people ca
 
 ## Usefulness
 
-> **Usefulness**. Explain as clearly as possible why your chosen application is useful. Make sure to answer the following questions: Are there any similar websites/applications out there? If so, what are they, and how is yours different?
-
 COVID-19 data has been well-explored and extremely well documented over the last years, both by media outlets and scientific researchers. However, what has been investigated to a lesser extent is the ways by which COVID conditions in a single city, county or state influence the types of anti-COVID research surrounding institutions conduct. Are certain regions of the United States more likely to investigate epidemiology, for example, rather than vaccine development on a biochemical level? And if so, are research institutions prone to change their academic focus if their local regions see a rapid growth or decline in COVID cases? We seek to answer these questions by linking medical data with research output trends across the US, yielding insight into preventing or mitigating pandemics in the future.
 There are websites that display covid trends in terms of the cases, hospitalizations and deaths but we plan to compliment this information with the common research trends and public response from certain areas. The information on cases is provided to compliment the data on the academic publications and the research response to the covid pandemic. 
 
 ## Realness
 
-> **Realness**. Describe what your data is and where you will get it.
-
 COVID-19 data set is based on a “centralized repository of up-to-date and curated datasets on or related to the spread and characteristics of the novel coronavirus (SARS-CoV-2) and its associated illness, COVID-19”. The amount of data and the up-to-date features makes the project able to reflect the real COVID-19 situation accurately. 
 The possibility to integrate AI and Machine Learning into representation and updating of our dataset can enhance our understanding of the disease and make it not only accurate in real-time, but also useful for the future. The feedback provided by users can enhance the accuracy and the reliability of the dataset, and the feedback provided by users can improve the accuracy of automatic processes that are involved in the website.
 
 ## FUNCTIONALITY
-
-> Description of the **functionality** that your website offers.
 
 ### Trending in Map
 
