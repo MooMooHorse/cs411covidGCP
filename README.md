@@ -1,3 +1,8 @@
+(This project are intially hosted on Google Cloud Platform, sadly, free trail expires, and we are so poor so still something need to be done to remove those IP addresses)
+If you want to run it on your machine, you need to replace all IP address to your server's IP address and buy a Google Map API key(~~don't buy it, use the free trail~~).
+
+We made a video to demo it, when we are rich enough, we can host it on GCP again. [demo video](https://mediaspace.illinois.edu/media/t/1_smgk2c33)
+
 # Project Description
 
 ## Data Sources
